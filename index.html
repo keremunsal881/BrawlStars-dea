@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Brawl Stars 100 Karakter</title>
+<style>
+body { background: linear-gradient(#0f0f0f,#3a0066); color:white; text-align:center; font-family:Arial;}
+h1 { color: gold; margin-bottom:10px;}
+input { padding:10px; width:250px; border-radius:10px; border:none; margin-bottom:20px;}
+.container {display:flex; flex-wrap:wrap; justify-content:center;}
+.card {background:#1e1e1e; margin:8px; padding:10px; border-radius:10px; width:140px; cursor:pointer; transition:.3s; text-align:center;}
+.card:hover {transform:scale(1.05); background:#333;}
+.card img {width:100%; border-radius:10px; margin-bottom:5px;}
+#popup {position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#111; padding:20px; border-radius:10px; display:none; width:340px;}
+button {margin-top:10px; padding:8px;}
+</style>
+</head>
+<body>
+
+<h1>🔥 BRAWL STARS 🔥</h1>
+<input type="text" id="search" placeholder="Karakter ara..." onkeyup="search()">
+
+<div class="container" id="container"></div>
+
+<div id="popup">
+<h2 id="name"></h2>
+<p id="desc"></p>
+<button onclick="document.getElementById('popup').style.display='none'">Kapat</button>
+</div>
+
+<script>
+
+// 100 karakter
+const brawlers = ["Crow","Chester","Frank","Edgar","Jessie","Darryl","Dynamike","Piper","Tara","Surge",
+"Clancy","Rico","Colt","Chuck","Carl","Angelo","Jacky","Pam","Buzz","Stu",
+"8-Bit","Mico","Nani","Colette","Byron","Melodie","Juju","Larry & Lawrie","Meeple","Berry",
+"El Primo","Poco","Shelly","Shade","Bull","Nita","Penny","Ash","Brock","Rosa",
+"Barley","Sam","Eve","Bea","Finx","Belle","Maisie","Draco","Tick","Gus",
+"Lily","Otis","Lola","Emz","Bibi","Griff","Grom","Bonnie","Gale","Mandy",
+"Hank","Pearl","Trunk","Mortis","Gene","Max","Mr. P","Sprout","Squeak","Lou",
+"Ruffs","Fang","Janet","Buster","Gray","R-T","Willow","Doug","Charlie","Moe",
+"Ollie","Lumi","Jae-Yong","Alli","Mina","Ziggy","Glowy","Spike","Leon","Sandy",
+"Amber","Meg","Cordelius","Kit","Kenji","Pierce","Kaze","Sirius"
+];
+
+// Uzun açıklamalar (temel + süper)
+const descriptions = {
+"Crow":"Crow temel saldırısında zehirli hançerler fırlatır, rakipler zamanla hasar alır. Süper ile havaya zıplayıp etrafa hançer saçar, hem kaçış hem saldırı için uygundur.",
+"Chester":"Chester temel saldırısıyla patlayıcı mermiler fırlatır ve alan hasarı verir. Süper yeteneği büyük bir patlama ile rakipleri sersemletir ve alan kontrolü sağlar.",
+"Frank":"Frank temel saldırısında dev bir çekiçle tek darbede yüksek hasar verir. Süper ile yere vurup çevresindeki rakiplere alan hasarı uygular ve onları yavaşlatır.",
+"Edgar":"Edgar temel saldırısı hızlı yumruklarla kısa mesafede yüksek hasar verir. Süper ile rakiplere hızla atlayarak onları sersemletir ve hasar verir.",
+"Jessie":"Jessie temel saldırısında elektrik topu fırlatır ve yakınındaki düşmanları da etkiler. Süper ile otomatik ateş eden bir turret yerleştirir, bölgeyi kontrol eder.",
+"Darryl":"Darryl temel saldırısıyla çift varil fırlatır ve düşmanlara yüksek hasar verir. Süper ile rulo yaparak hızlı bir şekilde rakiplere çarpar, engelleri aşar.",
+"Dynamike":"Dynamike temel saldırısında patlayıcı çubuklar fırlatır, geniş alana hasar verir. Süper ile büyük bir TNT bombası atar, rakipleri alan dışına iter.",
+"Piper":"Piper temel saldırısıyla uzun menzilli sniper atışı yapar, uzak mesafede yüksek hasar verir. Süper ile havaya zıplayıp düşmanlara toplu hasar verir.",
+"Tara":"Tara temel saldırısında üç tarot kartı fırlatır, düşmanları zayıflatır. Süper ile rakipleri bir araya çekip gruplara hasar verir.",
+"Surge":"Surge temel saldırısında enerji topları fırlatır, menzil arttıkça hasar yükselir. Süper ile seviye atlayıp yeteneklerini güçlendirir.",
+"Clancy":"Clancy temel saldırısıyla hızlı atışlar yapar, düşmanı sersemletir. Süper ile hedefe roket fırlatarak alan hasarı verir.",
+"Rico":"Rico temel saldırısında sekmeli mermiler fırlatır, duvarlardan sekerek hasar verir. Süper ile çok sayıda mermi saçar ve alan kontrolü sağlar.",
+"Colt":"Colt temel saldırısında hızlı ve uzun menzilli mermiler atar. Süper ile geniş bir çizgi boyunca mermiler saçar ve büyük hasar verir.",
+"Chuck":"Chuck temel saldırısında patlayıcı yumruklar atar, yakın mesafede yüksek hasar verir. Süper ile hızla ileri atılarak rakipleri devre dışı bırakır.",
+"Carl":"Carl temel saldırısında dönen kazma fırlatır ve düşmanları keser. Süper ile dönerek ilerler ve çarpan düşmanlara hasar verir.",
+"Angelo":"Angelo temel saldırısında hızlı enerji atışları yapar. Süper ile düşmanların hareketlerini kısıtlayan alan oluşturur.",
+"Jacky":"Jacky temel saldırısında sallanan çekiçle alan hasarı verir. Süper ile yer sarsıntısı yaparak rakipleri sersemletir.",
+"Pam":"Pam temel saldırısında otomatik mermiler atar. Süper ile sağlık istasyonu yerleştirir, takım arkadaşlarını iyileştirir.",
+"Buzz":"Buzz temel saldırısında yakın mesafede hızlı pençelerle saldırır. Süper ile rakiplere fırlayarak hasar verir ve engelleri aşar.",
+"Stu":"Stu temel saldırısında elektrik atışları yapar. Süper ile hızlı bir dash yapar ve rakiplere çarpar, yeniden saldırı kazanır.",
+"8-Bit":"8-Bit temel saldırısında uzun menzilli mermi fırlatır. Süper ile hareket hızını artıran bir alan oluşturur.",
+"Mico":"Mico temel saldırısında muz bombası fırlatır ve düşmanlara zıplama hasarı verir. Süper ile alanı kontrol eder.",
+"Nani":"Nani temel saldırısında küçük enerji topu fırlatır. Süper ile büyük top oluşturur ve düşmanlara yüksek hasar verir.",
+"Colette":"Colette temel saldırısında rakibin canına oranla hasar verir. Süper ile büyük bir alan hasarı yapar.",
+"Byron":"Byron temel saldırısıyla rakipleri zehirler ve takım arkadaşlarını iyileştirir. Süper ile büyük bir iksir şişesi atar, hasar verir ve iyileştirir.",
+"Melodie":"Melodie temel saldırısında ses dalgaları fırlatır, rakipleri yavaşlatır. Süper ile büyük alan etkisi yaratan bir patlama yapar.",
+"Juju":"Juju temel saldırısında kemik mermiler fırlatır. Süper ile takım arkadaşlarını güçlendirir ve düşmanlara hasar verir.",
+"Larry & Lawrie":"Temel saldırıda hızlı mermi atışları yapar. Süper ile düşmanlara büyük hasar veren saldırı yapar.",
+"Meeple":"Temel saldırı alan etkili mermiler atar. Süper ile düşmanları sersemletir ve alan kontrolü sağlar.",
+"Berry":"Temel saldırısı hızlı bıçak atışlarıdır. Süper ile düşmanları sersemletir ve bölge kontrolü sağlar.",
+"El Primo":"El Primo temel saldırısında yumruklarla yüksek hasar verir. Süper ile havaya zıplayarak düşmanları sersemletir ve alana hasar verir.",
+"Poco":"Poco temel saldırısında dalga şeklinde ses atışları yapar. Süper ile takım arkadaşlarını iyileştirir ve düşmanlara hasar verir.",
+"Shelly":"Shelly temel saldırısında pompalı tüfek ile yakın mesafede yüksek hasar verir. Süper ile büyük patlama yapar ve düşmanları geriye iter.",
+"Bull":"Bull temel saldırısında yakın mesafede güçlü mermiler atar. Süper ile hızla ilerleyip düşmanlara çarpar ve engelleri aşar.",
+"Nita":"Nita temel saldırısında ayı mermisi fırlatır, yakınındaki düşmanlara hasar verir. Süper ile ayısını çağırır, düşmanları saldırır.",
+"Penny":"Penny temel saldırısında mermi fırlatır ve düşmanları patlatır. Süper ile top yerleştirir, düşmanlara alan hasarı verir.",
+"Ash":"Ash temel saldırısında hızlı yumruklar atar. Süper ile düşmanları sersemletir ve alana hasar verir.",
+"Brock":"Brock temel saldırısında uzun menzilli roket atar. Süper ile büyük alan hasarı verir.",
+"Rosa":"Rosa temel saldırısında yakın dövüş vuruşları yapar. Süper ile kalkan oluşturur, hasarı azaltır ve ilerler.",
+"Barley":"Barley temel saldırısında içecek şişeleri fırlatır, alan hasarı verir. Süper ile büyük şişeler atar, geniş alan etkisi yapar.",
+"Sam":"Sam temel saldırısında hızlı yumruklar atar. Süper ile rakipleri sersemletir ve hasar verir.",
+"Eve":"Eve temel saldırısında enerji atışları yapar. Süper ile alan kontrolü sağlar ve düşmanları yavaşlatır.",
+"Bea":"Bea temel saldırısında iğne atar ve kritik hasar verir. Süper ile büyük bir bal arısı fırlatır, alan hasarı verir.",
+"Finx":"Temel saldırı hızlı atışlar yapar. Süper ile rakiplere alan hasarı verir.",
+"Belle":"Temel saldırı uzun menzilli atışlar yapar. Süper ile düşmana işaret koyar ve hasarı artırır.",
+"Maisie":"Temel saldırısı çoklu mermilerdir. Süper ile düşmanları kontrol eder ve alan hasarı verir.",
+"Draco":"Temel saldırı ejderha ateşi fırlatır. Süper ile alanı ateşe verir ve hasar sağlar.",
+"Tick":"Tick temel saldırısında küçük bombalar fırlatır. Süper ile büyük bomba atar, rakipleri kontrol eder.",
+"Gus":"Gus temel saldırısında yumuşak mermi fırlatır. Süper ile düşmanları sersemletir.",
+"Lily":"Lily temel saldırısı çiçek atışı yapar. Süper ile iyileştirme alanı oluşturur.",
+"Otis":"Otis temel saldırısı hızlı yumruklar. Süper ile düşmanları sersemletir.",
+"Lola":"Lola temel saldırısı zincir mermilerdir. Süper ile büyük zincir patlaması yapar.",
+"Emz":"Emz temel saldırısında saç spreyi fırlatır. Süper ile alan hasarı ve yavaşlatma sağlar.",
+"Bibi":"Bibi temel saldırısında sopa ile vuruş yapar. Süper ile fırlayarak hasar verir.",
+"Griff":"Griff temel saldırısı mermi fırlatır. Süper ile alan hasarı verir.",
+"Grom":"Grom temel saldırısı patlayıcıdır. Süper ile rakipleri sersemletir.",
+"Bonnie":"Bonnie temel saldırısı bıçak atışı yapar. Süper ile alan hasarı ve sersemletme sağlar.",
+"Gale":"Gale temel saldırısı rüzgar fırlatır. Süper ile düşmanları geri iter.",
+"Mandy":"Mandy temel saldırısı zıplama saldırısı yapar. Süper ile alan hasarı verir.",
+"Hank":"Hank temel saldırısı yumruk atar. Süper ile düşmanları sersemletir.",
+"Pearl":"Pearl temel saldırısı enerji topu fırlatır. Süper ile alan kontrolü sağlar.",
+"Trunk":"Trunk temel saldırısı ağaç fırlatır. Süper ile alan hasarı yapar.",
+"Mortis":"Mortis temel saldırısı hızlı darbelerdir. Süper ile düşmanlara atlayarak hasar verir.",
+"Gene":"Gene temel saldırısı enerji fırlatır. Süper ile rakipleri çekerek kontrol eder.",
+"Max":"Max temel saldırısı hızlı mermi atar. Süper ile hız artırır ve takım arkadaşlarını destekler.",
+"Mr. P":"Mr. P temel saldırısı valiz fırlatır. Süper ile turrets çağırır ve alan kontrolü sağlar.",
+"Sprout":"Sprout temel saldırısı patlayan top atar. Süper ile alanı engeller ve hasar verir.",
+"Squeak":"Squeak temel saldırısı yapışkan bomba fırlatır. Süper ile büyük alan hasarı verir.",
+"Lou":"Lou temel saldırısı buz topu atar. Süper ile alanı dondurur ve düşmanları yavaşlatır.",
+"Ruffs":"Ruffs temel saldırısı patlayıcı fırlatır. Süper ile alan hasarı ve iyileştirme sağlar.",
+"Fang":"Fang temel saldırısı hızlı saldırır. Süper ile düşmanları kontrol eder.",
+"Janet":"Janet temel saldırısı enerji mermisi fırlatır. Süper ile alan kontrolü sağlar.",
+"Buster":"Buster temel saldırısı hızlı vurur. Süper ile alan hasarı verir.",
+"Gray":"Gray temel saldırısı top fırlatır. Süper ile düşmanları sersemletir.",
+"R-T":"R-T temel saldırısı lazer atar. Süper ile alan hasarı ve yavaşlatma sağlar.",
+"Willow":"Willow temel saldırısı büyü fırlatır. Süper ile alan hasarı sağlar.",
+"Doug":"Doug temel saldırısı hızlı yumruk atar. Süper ile düşmanları sersemletir.",
+"Charlie":"Charlie temel saldırısı enerji atar. Süper ile alan hasarı verir.",
+"Moe":"Moe temel saldırısı mermi atar. Süper ile düşmanları kontrol eder.",
+"Ollie":"Ollie temel saldırısı disk fırlatır. Süper ile alan kontrolü sağlar.",
+"Lumi":"Lumi temel saldırısı ışık fırlatır. Süper ile alan hasarı verir.",
+"Jae-Yong":"Jae-Yong temel saldırısı hızlı vurur. Süper ile düşmanları sersemletir.",
+"Alli":"Alli temel saldırısı büyü atar. Süper ile alan hasarı sağlar.",
+"Mina":"Mina temel saldırısı mermi fırlatır. Süper ile düşmanları kontrol eder.",
+"Ziggy":"Ziggy temel saldırısı yıldız fırlatır. Süper ile alan kontrolü sağlar.",
+"Glowy":"Glowy temel saldırısı ışık atışı yapar. Süper ile alan hasarı verir.",
+"Sandy":"Sandy temel saldırısı rüzgar fırlatır. Süper ile düşmanları sersemletir.",
+"Amber":"Amber temel saldırısı ateş topu fırlatır. Süper ile alan hasarı sağlar.",
+"Meg":"Meg temel saldırısı mermi atar. Süper ile düşmanları sersemletir.",
+"Cordelius":"Cordelius temel saldırısı patlayıcı fırlatır. Süper ile alan hasarı verir.",
+"Kit":"Kit temel saldırısı hızlı mermi atar. Süper ile düşmanları kontrol eder.",
+"Kenji":"Kenji temel saldırısı hızlı yumruklar atar. Süper ile düşmanları sersemletir.",
+"Pierce":"Pierce temel saldırısı mermi fırlatır. Süper ile alan hasarı verir.",
+"Kaze":"Kaze temel saldırısı bıçak fırlatır. Süper ile düşmanları kontrol eder.",
+"Sirius":"Sirius temel saldırısı enerji topu atar. Süper ile alan hasarı sağlar."
+};
+
+// Kartları oluştur
+function createCards(){
+  const container=document.getElementById("container");
+  brawlers.forEach(b=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`<img src="https://static.wikia.nocookie.net/brawlstars/images/3/33/${b.replace(/ /g,"_")}_icon.png" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=${b}'"><p>${b}</p>`;
+    div.onclick=()=>{document.getElementById("name").innerText=b; document.getElementById("desc").innerText=descriptions[b]; document.getElementById("popup").style.display="block";};
+    container.appendChild(div);
+  });
+}
+
+function search(){
+  const v=document.getElementById("search").value.toLowerCase();
+  [...document.getElementsByClassName("card")].forEach(x=>x.style.display=x.innerText.toLowerCase().includes(v)?"block":"none");
+}
+
+create();
+</script>
+</body>
+</html>
